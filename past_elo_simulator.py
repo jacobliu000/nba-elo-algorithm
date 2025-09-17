@@ -6,8 +6,9 @@ end_datetime = "2025-04-13 00:00:00"
 
 K = 20 # variation
 H = 65 # home court advantage
+alpha = 0.9
 
-df = pd.read_csv("Games.csv")
+df = pd.read_csv("past_games.csv")
 
 df = df.drop(["gameId", "hometeamCity", "hometeamId", "awayteamCity", "awayteamId", "gameType", "attendance", "arenaId", "gameLabel", "gameSubLabel", "seriesGameNumber", "winner"], axis=1)
 df["gameDate"] = pd.to_datetime(df["gameDate"])
@@ -20,7 +21,7 @@ ELOS = {}
 
 
 for row in df.itertuples(index=True):
-
+    
     if (row.homeScore > row.awayScore):
         S_home = 1
         S_away = 0
@@ -37,11 +38,10 @@ for row in df.itertuples(index=True):
     ELOS[row.hometeamName] = R_home + K * (S_home - P_home)
     ELOS[row.awayteamName] = R_away + K * (S_away - P_away)
 
-with open("elos.json", "w") as f:
+
+
+for team in ELOS.keys():
+    ELOS[team] = 1500 + alpha * (ELOS[team] - 1500)
+
+with open("season_start_elos.json", "w") as f:
     json.dump(ELOS, f)
-
-#print it out
-max_len = max(len(team) for team in ELOS.keys())
-
-for team,rating in sorted(ELOS.items(), key = lambda x : x[1], reverse=True):
-    print(f"{team:<{max_len}} : {rating:.2f}")
