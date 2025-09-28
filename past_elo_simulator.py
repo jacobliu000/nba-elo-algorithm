@@ -5,7 +5,7 @@ start_datetime = "2024-10-21 00:00:00" #for now, start date of 24-25 season
 end_datetime = "2025-04-13 00:00:00"
 
 K = 20 # variation
-H = 65 # home court advantage
+H = 32 # home court advantage
 alpha = 0.9
 
 df = pd.read_csv("past_games.csv")

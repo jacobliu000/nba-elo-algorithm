@@ -4,7 +4,6 @@ from numpy import log as ln
 start_datetime = "2024-10-21 00:00:00" #for now, start date of 24-25 season
 end_datetime = "2025-04-13 00:00:00"
 
-K = 20 # variation
 alpha = 0.9
 
 df = pd.read_csv("past_games.csv")
@@ -20,10 +19,11 @@ ELOS = {}
 
 
 def test_H(h, seed):
+    K = 20
     ELOS = {}
     tot = 0
     logloss = 0
-    sample = df.sample(frac=0.3, random_state=seed)
+    sample = df.sample(frac=1, random_state=seed)
     for row in sample.itertuples(index=True):
                 
 
@@ -50,12 +50,57 @@ def test_H(h, seed):
 
     logloss = -logloss/tot
 
-    print("H=",h, "Loss=", logloss)
+    return logloss
 
-#middle = 33
-for H in range(50, 71):
-    h_real = H/2
-    for s in range(67,70):
-        test_H(h_real, s)
-    print("-")
+def test_K(k, seed):
+    H = 32
+    ELOS = {}
+    tot = 0
+    logloss = 0
+    sample = df.sample(frac=1, random_state=seed)
+    for row in sample.itertuples(index=True):
+                
+        R_home = ELOS.get(row.hometeamName,1500)
+        R_away = ELOS.get(row.awayteamName,1500)
+
+        P_home = (1/(1 + 10 ** ((R_away-(R_home+H))/400)))
+        P_away = 1 - P_home
+        
+        if (row.homeScore > row.awayScore):
+            S_home = 1
+            S_away = 0
+        else:
+            S_home = 0
+            S_away = 1
+
+        logloss += S_home * ln(P_home) + (1 - S_home) * ln(1 - P_home)
+
+        ELOS[row.hometeamName] = R_home + k * (S_home - P_home)
+        ELOS[row.awayteamName] = R_away + k * (S_away - P_away)
+
+        tot += 1
+
+
+    logloss = -logloss/tot
+
+    return logloss
+
+
+minVal = 1
+minK = -1
+
+#H = 32
+
+for K in range(0, 61, 5):
+    
+    tot = 0
+ 
+    tot += test_K(K, 1)
+
+    if (tot < minVal):
+        minVal = tot
+        minK = K
+    print(K, " ", tot)
+
+print("Min at ", minK)
 
