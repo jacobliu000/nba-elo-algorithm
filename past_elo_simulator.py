@@ -5,7 +5,7 @@ start_datetime = "2024-10-21 00:00:00" #for now, start date of 24-25 season
 end_datetime = "2025-04-13 00:00:00"
 
 K = 20 # variation
-H = 32 # home court advantage
+H = 34 # home court advantage
 alpha = 0.9
 
 df = pd.read_csv("past_games.csv")
@@ -22,21 +22,27 @@ ELOS = {}
 
 for row in df.itertuples(index=True):
     
+    
+    
     if (row.homeScore > row.awayScore):
+        
         S_home = 1
         S_away = 0
     else:
         S_home = 0
         S_away = 1
 
-    R_home = ELOS.get(row.hometeamName,1500)
-    R_away = ELOS.get(row.awayteamName,1500)
+    R_home = ELOS.get(row.hometeamName.lower(),1500)
+    R_away = ELOS.get(row.awayteamName.lower(),1500)
 
     P_home = (1/(1 + 10 ** ((R_away-(R_home+H))/400)))
     P_away = 1 - P_home
 
-    ELOS[row.hometeamName] = R_home + K * (S_home - P_home)
-    ELOS[row.awayteamName] = R_away + K * (S_away - P_away)
+
+
+    ELOS[row.hometeamName.lower()] = R_home + K * (S_home - P_home)
+    ELOS[row.awayteamName.lower()] = R_away + K * (S_away - P_away)
+
 
 
 

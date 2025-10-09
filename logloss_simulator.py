@@ -83,24 +83,14 @@ def test_K(k, seed):
 
     logloss = -logloss/tot
 
+
     return logloss
 
 
-minVal = 1
-minK = -1
 
-#H = 32
-
-for K in range(0, 61, 5):
-    
-    tot = 0
- 
-    tot += test_K(K, 1)
-
-    if (tot < minVal):
-        minVal = tot
-        minK = K
-    print(K, " ", tot)
-
-print("Min at ", minK)
-
+print(test_H(32, 67))
+print(test_H(33, 67))
+print(test_H(34, 67))
+print(test_H(35, 67))
+print(test_H(36, 67))
+print(test_H(37, 67))

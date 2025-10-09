@@ -27,13 +27,17 @@ def main():
     print("Implied Odds | home = ", round(100*implied_odds, 3), "% | away = ", round(100*(1-implied_odds), 3), "%")
     H_best = 32
     probability = round(100 * 1/(1+10**((ELOS[away]-ELOS[home]-H_best)/400)),3)
-    print("Most Accurate Probability | home =", probability, "% | away = ", 100-probability, "%")
+    print("Most Accurate Probability | home =", probability, "% | away = ", round(100-probability,3), "%")
     print("---")
+
+    h_real = 0
+    probability = round(100 * 1/(1+10**((ELOS[away]-ELOS[home]-h_real)/400)),3)
+    print("H=",h_real," home win =", probability, "% | away win = ", round(100-probability, 3), "%")
 
     for H in range(50, 71):
         h_real = H/2
         probability = round(100 * 1/(1+10**((ELOS[away]-ELOS[home]-h_real)/400)),3)
-        print("H=",h_real," home win =", probability, "% | away win = ", 100-probability, "%")
+        print("H=",h_real," home win =", probability, "% | away win = ", round(100-probability, 3), "%")
 
 
 main()
